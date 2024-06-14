@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import com.beans.Product;
 
 public class ProductDao {
+	@Autowired
 	JdbcTemplate template;
 	
 	public void setTemplate(JdbcTemplate template) {    
