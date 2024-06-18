@@ -23,8 +23,8 @@
         }
 
         .header {
-            font-size: 36px;
-            color: #ff416c; /* Matching form colors */
+            font-size: 40px;
+            color: #FF4B2B; /* Matching form colors */
             margin-bottom: 20px;
             text-align: center;
         }
@@ -258,14 +258,14 @@
 
         .footer {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 60px;
             color: #a9a9a9;
-            font-size: 12px; /* Küçük yazı boyutu */
+            font-size: 10px; 
         }
 
         .footer .secure-shopping {
             color: #008000;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .footer img {
