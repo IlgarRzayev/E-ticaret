@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNIQUE E-Ticaret</title>
+    <title>UNIQUE Homepage</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -14,7 +14,7 @@
         }
 
         .main-navbar .top-navbar {
-            background-color: #333;
+            background-color: #FF4B2B;
             padding-top: 1px;
             padding-bottom: 1px;
         }
@@ -39,6 +39,7 @@
         .main-navbar .categories-navbar {
             background-color: #ddd;
             padding: 0;
+            text-align: center; /* Kategorileri ortalamak için metin hizalaması ekliyoruz */
         }
 
         .main-navbar .categories-navbar .nav-item .nav-link {
@@ -72,6 +73,30 @@
             background-color: transparent;
         }
 
+        .search-form {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-form input[type="text"] {
+            padding: 8px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .search-form button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .search-form button:hover {
+            color: orange;
+        }
+
         @media only screen and (max-width: 600px) {
             .main-navbar .top-navbar .nav-links {
                 font-size: 12px;
@@ -80,6 +105,19 @@
             .main-navbar .top-navbar .navbar-brand {
                 font-size: 18px; /* Küçük ekranlarda logo boyutunu küçültüyoruz */
             }
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-menu {
+            width: 100%; /* Genişliğini ayarlayın */
+            text-align: left; /* Metin hizalamasını sola alın */
+        }
+
+        .dropdown-item {
+            white-space: normal; /* Metni satır kaydırmaya zorlar */
         }
     </style>
 </head>
@@ -90,6 +128,10 @@
             <div class="container-fluid">
                 <nav class="navbar navbar-expand-lg navbar-dark">
                     <a class="navbar-brand" href="#">UNIQUE</a>
+                    <form class="search-form ml-auto">
+                        <input type="text" placeholder="Ara...">
+                        <button type="submit"><i class="fas fa-search"></i></button>
+                    </form>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#topNavbar" aria-controls="topNavbar" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -118,30 +160,94 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="categoriesNav">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Elektronik</a>
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="electronicsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Elektronik
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="electronicsDropdown">
+                                <a class="dropdown-item" href="#">TV, Ses ve Görüntü Sistemleri</a>
+                                <a class="dropdown-item" href="#">Bilgisayar, Tablet</a>
+                                <a class="dropdown-item" href="#">Telefon</a>
+                                <a class="dropdown-item" href="#">Beyaz Eşya</a>
+                            </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Moda</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="fashionDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Moda
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="fashionDropdown">
+                                <a class="dropdown-item" href="#">Kadın</a>
+                                <a class="dropdown-item" href="#">Erkek</a>
+                                <a class="dropdown-item" href="#">Çocuk</a>
+                            </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Ev-Ofis Eşyaları</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="homeOfficeDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Ev-Ofis Eşyaları
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="homeOfficeDropdown">
+                                <a class="dropdown-item" href="#">Mobilya</a>
+                                <a class="dropdown-item" href="#">Dekorasyon</a>
+                                <a class="dropdown-item" href="#">Ev Tekstili</a>
+                            </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Anne, Bebek, Oyuncak</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="babyToysDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Anne, Bebek, Oyuncak
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="babyToysDropdown">
+                                <a class="dropdown-item" href="#">Oyuncaklar</a>
+                                <a class="dropdown-item" href="#">Bebek Arabaları</a>
+                                <a class="dropdown-item" href="#">Emzirme Ürünleri</a>
+                                <a class="dropdown-item" href="#">Bebek Bezi & Islak Mendil</a>
+                                <a class="dropdown-item" href="#">Bebek Odası & Güvenlik</a>
+                                <a class="dropdown-item" href="#">Bebek Bakım & Banyo & Sağlık</a>
+                                <a class="dropdown-item" href="#">Giyim</a>
+                                <a class="dropdown-item" href="#">Yurt Dışından</a>
+                            </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Spor, Ayakkabı</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="sportsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Spor, Outdoor
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="sportsDropdown">
+                                <a class="dropdown-item" href="#">Spor Giyim</a>
+                                <a class="dropdown-item" href="#">Spor Ayakkabı</a>
+                                <a class="dropdown-item" href="#">Spor Ekipmanları</a>
+                            </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Kozmetik, Kişisel Bakım</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="cosmeticsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Kozmetik, Kişisel Bakım
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="cosmeticsDropdown">
+                                <a class="dropdown-item" href="#">Makyaj</a>
+                                <a class="dropdown-item" href="#">Cilt Bakımı</a>
+                                <a class="dropdown-item" href="#">Saç Bakımı</a>
+                            </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Süper-Market, PetShop</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="supermarketDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Süper-Market, PetShop
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="supermarketDropdown">
+                                <a class="dropdown-item" href="#">Gıda</a>
+                                <a class="dropdown-item" href="#">İçecek</a>
+                                <a class="dropdown-item" href="#">Ev Temizliği</a>
+                                <a class="dropdown-item" href="#">Evcil Hayvan</a>
+                            </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Kitap, Müzik, Film, Hobi</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="booksDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Kitap, Müzik, Film, Hobi
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="booksDropdown">
+                                <a class="dropdown-item" href="#">Kitap</a>
+                                <a class="dropdown-item" href="#">Müzik</a>
+                                <a class="dropdown-item" href="#">Film</a>
+                                <a class="dropdown-item" href="#">Hobi</a>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -154,4 +260,4 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-
+    
