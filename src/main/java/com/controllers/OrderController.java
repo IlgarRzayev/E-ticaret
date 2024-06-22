@@ -35,7 +35,7 @@ public class OrderController {
         order.setProductId(productId);
         orderdao.addOrder(order);
 
-        return "redirect:/cart";
+        return "redirect:/orderpage";
     }
     
     
@@ -59,7 +59,7 @@ public class OrderController {
         m.addAttribute("orders", orders);
         m.addAttribute("products", products);
 
-        return "cart";
+        return "orderpage";
         
     }
     
