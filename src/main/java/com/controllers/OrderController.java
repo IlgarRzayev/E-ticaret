@@ -26,7 +26,7 @@ public class OrderController {
     ProductDao pdao;
 
     @RequestMapping(value = "/pay/{productId}", method = RequestMethod.GET)
-    public String addToCart(@PathVariable int productId, HttpSession session, Model m) {
+    public String addToOrder(@PathVariable int productId, HttpSession session, Model m) {
         User user = (User) session.getAttribute("loggedInUser");
         
         
