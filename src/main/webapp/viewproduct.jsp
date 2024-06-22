@@ -29,8 +29,8 @@
 				<td>${product.price}</td>
 				<td>${product.quantity}</td>
 				<td>${product.imageUrl}</td>
-				<td><a href="editproduct/${product.productİd}">Edit</a></td>
-				<td><a href="deleteproduct/${product.productİd}">Delete</a></td>
+				<td><a href="editproduct/${product.productId}">Edit</a></td>
+				<td><a href="deleteproduct/${product.productId}">Delete</a></td>
 				
 			</tr>
 		</c:forEach>
