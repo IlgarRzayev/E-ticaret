@@ -5,6 +5,7 @@ public class Cart {
     private int userId;
     private int productId;
     private int quantity;
+    private double price;
     
     public int getCartId() {
     	return cartId;
@@ -32,5 +33,12 @@ public class Cart {
     }
     public void setQuantity(int quantity) {
     	this.quantity = quantity;
+    }
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }
