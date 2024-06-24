@@ -1,10 +1,10 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Shopping Cart</title>
+    <title>Order Page</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         .container {
@@ -36,27 +36,33 @@
 </head>
 <body>
     <div class="container">
-        <h2>Shopping Cart</h2>
-        <form th:action="@{/checkout}" method="post">
-            <div class="row">
-                <c:forEach items="${products}" var="product">
-                    <div class="col-md-4">
-                        <div class="product">
-                            <h3>${product.name}</h3>
-                            <img src="${product.imageUrl}" alt="${product.name}">
-                            <p>${product.price} TL</p>
-                            <div class="actions">
-                                <input type="checkbox" name="selectedProducts" th:value="${product.id}">
-                                <label>Seç</label>
-                                <a href="deleteFromCart/${product.id}" class="btn btn-danger">Sepetten Sil</a>
-                                <a href="checkout/${product.id}" class="btn btn-info">Direkt Ödeme</a>
-                            </div>
-                        </div>
-                    </div>
-                </c:forEach>
-            </div>
-            <button type="submit" class="btn btn-primary mt-3">Seçilenleri Satın Al</button>
-        </form>
+        <h2>Orders</h2>
+        <c:choose>
+            <c:when test="${empty orders}">
+                <p>Odemede ürün bulunmamaktadır.</p>
+            </c:when>
+            <c:otherwise>
+                <div class="row">
+                    <c:forEach items="${orders}" var="order">
+                        <c:forEach items="${products}" var="product">
+                            <c:if test="${product.getProductId() == order.getProductId()}">
+                                <div class="col-md-4">
+                                    <div class="product">
+                                        <h3>${product.getName()}</h3>
+                                        <img src="${product.getImageUrl()}" alt="${product.getName()}">
+                                        <p>${product.getPrice()} TL</p>
+                                        <div class="actions">
+                                            <a href="viewOrder/${order.getOrderId()}" class="btn btn-info">Siparişi Görüntüle</a>
+                                            <a href="cancelOrder/${order.getOrderId()}" class="btn btn-danger">Siparişi İptal Et</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </c:if>
+                        </c:forEach>
+                    </c:forEach>
+                </div>
+            </c:otherwise>
+        </c:choose>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
