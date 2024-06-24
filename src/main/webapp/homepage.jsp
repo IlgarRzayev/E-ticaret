@@ -141,14 +141,24 @@
                                 <a class="nav-links" href="profile.jsp"><i class="fas fa-user"></i> Profil</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-links" href="#"><i class="fas fa-shopping-cart"></i> Sepet</a>
+                                <a class="nav-links" href="cart"><i class="fas fa-shopping-cart"></i> Sepet</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-links" href="#"><i class="fas fa-credit-card"></i> Ödeme</a>
+                                <a class="nav-links" href="checkout"><i class="fas fa-credit-card"></i> Ödeme</a>
                             </li>
-                            <li class="nav-item">
+                            <%
+							if (session.getAttribute("loggedInUser") != null) {
+							%>
+							<li class="nav-item"><a class="nav-links" href="logout"><i
+									class="fas fa-sign-out-alt"></i> Çıkış</a></li>
+							<%
+							} else {
+							%>
+							<li class="nav-item">
                                 <a class="nav-links" href="register"><i class="fas fa-sign-in-alt"></i> Giriş/Kayıt</a>
-                            </li>
+                            </li>	<%
+								}
+								%>
                         </ul>
                     </div>
                 </nav>
