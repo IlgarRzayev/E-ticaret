@@ -138,7 +138,10 @@
                     <div class="collapse navbar-collapse" id="topNavbar">
                         <ul class="navbar-nav ml-auto">
                             <li class="nav-item">
-                                <a class="nav-links" href="profile.jsp"><i class="fas fa-user"></i> Profil</a>
+                                <a class="nav-links" href="profile"><i class="fas fa-user"></i> Profil</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-links" href="orders"><i class="fas fa-box"></i> Siparişler</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-links" href="cart"><i class="fas fa-shopping-cart"></i> Sepet</a>
@@ -270,4 +273,3 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-    
