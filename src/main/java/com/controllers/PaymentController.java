@@ -34,37 +34,38 @@ public class PaymentController {
 	
 	
 	@RequestMapping(value = "/pay", method = RequestMethod.GET)
-    public String addToCart(@RequestParam("productId") String productId, HttpSession session, Model m) {
+    public String addToCart(@RequestParam("cartId") String cartId, HttpSession session) {
         User user = (User) session.getAttribute("loggedInUser");
-        Product product = pdao.getProductById(Integer.valueOf(productId));
-        
+        Product product = pdao.getProductByCartId(Integer.valueOf(cartId));
         Payment payment = new Payment();
         payment.setUserId(user.getId());
         payment.setTotalPrice(product.getPrice());
-        paymentdao.addPayment(payment);
-
-        return "redirect:/checkout";
+        payment.setProductId(Integer.valueOf(product.getProductId()));
+        return "redirect:/checkout?cartId="+Integer.valueOf(cartId);
     }
     
     
     
 	@RequestMapping("/checkout")
-	public String checkout(HttpSession session, HttpServletRequest req) {
+	public String checkout(@RequestParam("cartId") String cartId,HttpSession session, HttpServletRequest req) {
 	    User user = (User) session.getAttribute("loggedInUser");
-
 	    if (user == null) {
 	        return "redirect:/register";
 	    }
 
 	    List<Payment> payments = paymentdao.getPaymentsByUserId(user.getId());
-	    
+	    double totalPrice = 0.0;
 
-	    
+	    // Toplam fiyatı hesaplayın
+	    for (Payment payment : payments) {
+	        totalPrice += payment.getTotalPrice(); // Ödeme miktarının doğru alan adını kullanın
+	    }
 
 	    session.setAttribute("payments", payments);
+	    session.setAttribute("totalPrice", totalPrice);
 
 	    return "checkout";
 	}
 
-}
 
+}
