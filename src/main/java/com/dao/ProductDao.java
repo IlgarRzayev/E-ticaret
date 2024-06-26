@@ -1,41 +1,48 @@
 package com.dao;
 
+import com.beans.Product;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;    
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;    
-import org.springframework.jdbc.core.JdbcTemplate;    
-import org.springframework.jdbc.core.RowMapper;
-
-import com.beans.Cart;
-import com.beans.Product;
-import com.beans.User;
-
+@Repository
 public class ProductDao {
+
 	@Autowired
-	JdbcTemplate template;
-	
-	public void setTemplate(JdbcTemplate template) {    
-	    this.template = template;    
+	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	public JdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
 	}
-	
+
+	@Autowired
+	public JdbcTemplate setJdbcTemplate(JdbcTemplate template) {
+		return this.jdbcTemplate = template;
+	}
+
 	public void save(Product product) {
-        String sql = "INSERT INTO products (userId, name, category, price, count, image) VALUES (?, ?, ?, ?, ?, ?)";
-        template.update(sql,product.getUserId(), product.getName(), product.getCategory(), product.getPrice(),  product.getQuantity(), product.getImageUrl());
+        String sql = "INSERT INTO products (userId, name, category, price, count) VALUES (?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql,product.getUserId(), product.getName(), product.getCategory(), product.getPrice(),  product.getQuantity());
     }
 	
 	public int update(Product product){    
 	    String sql="update products set name='" + product.getName() + "', category='" + product.getCategory() + "',price='" + product.getPrice() + "', count='" + product.getQuantity() + "',image='" + product.getImageUrl() + "' where productId="+product.getProductId()+"";    
-	    return template.update(sql);    
+	    return jdbcTemplate.update(sql);    
 	}    
 
 	public int delete(int productId){    
 	    String sql="delete from products where productId="+productId+"";    
-	    return template.update(sql);    
+	    return jdbcTemplate.update(sql);    
 	}
 
 	/*
@@ -44,14 +51,29 @@ public class ProductDao {
 	 */
 	public int deleteByUserId(int id){    
 	    String sql="delete from products where userId="+id+"";    
-	    return template.update(sql);    
+	    return jdbcTemplate.update(sql);    
 	}
-	
+
 	public Product getProductById(int productId){    
 	    String sql="select * from Products where productId=?";    
-	    return template.queryForObject(sql, new Object[]{productId},new BeanPropertyRowMapper<Product>(Product.class));    
+	    return jdbcTemplate.queryForObject(sql, new Object[]{productId},new BeanPropertyRowMapper<Product>(Product.class));    
 	}    
 
+	public Product getProductByCartId(int cartId) {
+	    String sql="SELECT p.* FROM carts as c, products as p where c.cartId="+cartId;    
+	    return jdbcTemplate.queryForObject(sql,new RowMapper<Product>(){    
+	        public Product mapRow(ResultSet rs, int row) throws SQLException {    
+	        	Product p=new Product();    
+	            p.setProductId(rs.getInt("productId"));    
+	            p.setName(rs.getString("name"));    
+	            p.setCategory(rs.getString("category"));    
+	            p.setPrice(rs.getDouble("price"));
+	            p.setQuantity(rs.getInt("count"));
+	            p.setImageUrl(rs.getString("image"));
+	            return p;    
+	        }    
+	    });   
+	}
 	/*
 	 * public List<Product> getProductsByUserId(int userId) { String sql =
 	 * "SELECT * FROM products WHERE userId=?"; return template.query(sql, new
@@ -61,7 +83,7 @@ public class ProductDao {
         List<Product> products = new ArrayList<>();
         String query = "SELECT * FROM products WHERE userId = ?";
 
-        try (PreparedStatement statement = template.getDataSource().getConnection().prepareStatement(query)) {
+        try (PreparedStatement statement = jdbcTemplate.getDataSource().getConnection().prepareStatement(query)) {
             statement.setInt(1, userId);
             ResultSet resultSet = statement.executeQuery();
 
@@ -83,7 +105,7 @@ public class ProductDao {
         return products;
     }
 	public List<Product> getProducts(){    
-	    return template.query("select * from Products",new RowMapper<Product>(){    
+	    return jdbcTemplate.query("select * from Products",new RowMapper<Product>(){    
 	        public Product mapRow(ResultSet rs, int row) throws SQLException {    
 	        	Product p=new Product();    
 	            p.setProductId(rs.getInt("productId"));    
@@ -96,6 +118,4 @@ public class ProductDao {
 	        }    
 	    });    
 	}
-
-	
 }
