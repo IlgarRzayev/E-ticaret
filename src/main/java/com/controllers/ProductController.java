@@ -24,138 +24,111 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.http.HttpRequest;
 import java.nio.file.Paths;
 import java.util.List;
 
 @Controller
 public class ProductController {
-	@Autowired
-	ProductDao pdao;
-	@Autowired
-	OrderDao orderdao;
-	@Autowired
-	UserDao udao;
-	/*
-	 * @GetMapping("/add-product") public String showAddProductForm(Model model) {
-	 * model.addAttribute("product", new Product()); return "add-product"; }
-	 */
+    @Autowired
+    ProductDao pdao;
+    @Autowired
+    OrderDao orderdao;
+    @Autowired
+    UserDao udao;
 
-	@PostMapping("/add-product")
-	public String addProduct(@ModelAttribute("product") Product product, @RequestParam("image") MultipartFile file,
-			HttpSession session, HttpServletRequest req) {
-		User user = (User) session.getAttribute("loggedInUser");
-		if (user == null) {
-			return "redirect:/register";
-		}
+    @PostMapping("/add-product")
+    public String addProduct(@RequestParam("userId") String userId, @RequestParam("name") String name, 
+                             @RequestParam("category") String category, @RequestParam("quantity") int quantity, 
+                             @RequestParam("price") double price, HttpServletRequest req) {
 
-		if (!file.isEmpty()) {
-			try {
-				// Dosyayı kaydet
-				String uploadsDir = "/uploads/";
-				String realPathtoUploads = Paths
-						.get(System.getProperty("user.dir"), "src", "main", "webapp", uploadsDir).toString();
-				if (!new File(realPathtoUploads).exists()) {
-					new File(realPathtoUploads).mkdirs();
-				}
+        
 
-				String filePath = realPathtoUploads + File.separator + file.getOriginalFilename();
-				File dest = new File(filePath);
-				file.transferTo(dest);
+        Product product = new Product();
+        product.setName(name);
+        product.setCategory(category);
+        product.setQuantity(quantity);
+        product.setPrice(price);
+        product.setUserId(Integer.valueOf(userId));
 
-				// Dosya yolunu ayarla
-				product.setImageUrl(uploadsDir + file.getOriginalFilename());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		product.setUserId(user.getId());
-		pdao.save(product);
-		return "redirect:/profile";
-	}
+        // Save the product to the database
+        pdao.save(product);
 
-	@RequestMapping("/profile")
-	public String viewproduct(HttpSession session, HttpServletRequest req) {
-		User user = (User) session.getAttribute("loggedInUser");
-		if (user == null) {
-			return "redirect:/register";
-		}
-		List<Product> list = pdao.getProductsByUserId(user.getId());
-		req.getServletContext().setAttribute("list", list);
-		return "profile";
-	}
+        return "redirect:/admin-page";
+    }
 
-	@RequestMapping("/viewdetail")
-	public String viewProductDetails(@RequestParam("productId") String productId, HttpServletRequest req) {
-		Product product = pdao.getProductById(Integer.valueOf(productId));
-		req.getServletContext().setAttribute("product", product);
-		return "product-details";
-	}
 
-	@RequestMapping("/shareproduct")
-	public String share(@RequestParam("productId") String productId, HttpServletRequest req) {
-		Product product = pdao.getProductById(Integer.valueOf(productId));
-		req.getServletContext().setAttribute("product", product);
-		return "homepage_foruser";
-	}
+    @RequestMapping("/profile")
+    public String viewproduct(HttpSession session, HttpServletRequest req) {
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/register";
+        }
+        List<Product> list = pdao.getProductsByUserId(user.getId());
+        req.getServletContext().setAttribute("list", list);
+        return "profile";
+    }
 
-	@RequestMapping(value = "/editproduct")
-	public String editProduct(@RequestParam("productId") String productId, HttpSession session,
-			HttpServletRequest req) {
-		
-		User loggedInUser = (User) session.getAttribute("loggedInUser");
-		Product product = pdao.getProductById(Integer.valueOf(productId));
-		
-		req.getServletContext().setAttribute("command", product);
-		return "producteditform";
-		// Yetkilendirme kontrolü
-		/*
-		 * if (loggedInUser != null && ("admin@admin".equals(loggedInUser.getEmail())))
-		 * { return "producteditform"; } else { return "redirect:/profile"; }
-		 */
-	}
+    @RequestMapping("/viewdetail")
+    public String viewProductDetails(@RequestParam("productId") String productId, HttpServletRequest req) {
+        Product product = pdao.getProductById(Integer.valueOf(productId));
+        req.getServletContext().setAttribute("product", product);
+        return "product-details";
+    }
 
-	@RequestMapping(value = "/producteditsave", method = RequestMethod.POST)
-	public String saveEditedProduct(@ModelAttribute("product") Product product, HttpSession session) {
-		User loggedInUser = (User) session.getAttribute("loggedInUser");
-		
-		
-	    if (product != null) {
-	        // Update the user properties
-	       product.setUserId(loggedInUser.getId());
-	        
-	        // Perform the update
-	        pdao.update(product);
-	    }
-		pdao.update(product);
-		// Yetkilendirme kontrolü
-		if (loggedInUser != null && ("admin@admin".equals(loggedInUser.getEmail()))) {
-			return "redirect:/viewproduct";
-		} else {
-			return "redirect:/profile";
-		}
-	}
+    @RequestMapping("/shareproduct")
+    public String share(@RequestParam("productId") String productId, HttpServletRequest req) {
+        Product product = pdao.getProductById(Integer.valueOf(productId));
+        req.getServletContext().setAttribute("product", product);
+        return "homepage_foruser";
+    }
 
-	@RequestMapping(value = "/deleteproduct", method = RequestMethod.GET)
-	public String deleteProduct(@RequestParam("productId") int id, HttpSession session) {
-		User loggedInUser = (User) session.getAttribute("loggedInUser");
-		//int productId = Integer.valueOf(id);
-		
-		pdao.delete(id);
-		// Yetkilendirme kontrolü
-		if (loggedInUser != null && ("admin@admin".equals(loggedInUser.getEmail()))) {
-			return "redirect:/viewproduct";
-		} else {
-			return "redirect:/profile";
-		}
-	}
+    @RequestMapping(value = "/editproduct")
+    public String editProduct(@RequestParam("productId") String productId, HttpSession session,
+                              HttpServletRequest req) {
 
-	@RequestMapping("/viewproduct")
-	public String viewproductsforadmin(HttpServletRequest req) {
-		List<Product> list = pdao.getProducts();
-		req.getServletContext().setAttribute("list", list);
-		return "viewproduct";
-	}
+        
+        Product product = pdao.getProductById(Integer.valueOf(productId));
 
+        req.getServletContext().setAttribute("command", product);
+        return "producteditform";
+    }
+
+    @RequestMapping(value = "/producteditsave", method = RequestMethod.POST)
+    public String saveEditedProduct(
+            @RequestParam("productId") int productId,
+            @RequestParam("userId") int userId,
+            @RequestParam("name") String name,
+            @RequestParam("category") String category,
+            @RequestParam("quantity") int quantity,
+            @RequestParam("price") double price,
+            HttpSession session) {
+       
+
+        // Admin ise ürün düzenleme işlemini gerçekleştir
+        Product product = new Product();
+        product.setProductId(productId);
+        product.setName(name);
+        product.setCategory(category);
+        product.setQuantity(quantity);
+        product.setPrice(price);
+        product.setUserId(userId);
+
+        pdao.update(product);
+
+        return "redirect:/viewproduct"; // Ürünler sayfasına yönlendir
+    }
+
+
+    @RequestMapping(value = "/deleteproduct", method = RequestMethod.GET)
+    public String deleteProduct(@RequestParam("productId") String id, HttpSession session) {
+        pdao.delete(Integer.valueOf(id));
+        return "redirect:/viewproduct";
+    }
+
+    @RequestMapping("/viewproduct")
+    public String viewproductsforadmin(HttpServletRequest req) {
+        List<Product> list = pdao.getProducts();
+        req.getServletContext().setAttribute("list", list);
+        return "viewproduct";
+    }
 }
-
