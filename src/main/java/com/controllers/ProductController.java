@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 import com.beans.Product;
 import com.beans.User;
@@ -36,13 +35,16 @@ public class ProductController {
     @Autowired
     UserDao udao;
 
+    /**
+     * Yeni bir ürün ekler.
+     
+     */
     @PostMapping("/add-product")
-    public String addProduct(@RequestParam("userId") String userId, @RequestParam("name") String name, 
-                             @RequestParam("category") String category, @RequestParam("quantity") int quantity, 
+    public String addProduct(@RequestParam("userId") String userId, @RequestParam("name") String name,
+                             @RequestParam("category") String category, @RequestParam("quantity") int quantity,
                              @RequestParam("price") double price, HttpServletRequest req) {
 
-        
-
+        // Yeni ürün oluştur
         Product product = new Product();
         product.setName(name);
         product.setCategory(category);
@@ -50,49 +52,69 @@ public class ProductController {
         product.setPrice(price);
         product.setUserId(Integer.valueOf(userId));
 
-        // Save the product to the database
+        // Ürünü veritabanına kaydet
         pdao.save(product);
 
-        return "redirect:/admin-page";
+        return "redirect:/admin-page"; // Admin sayfasına yönlendir
     }
 
-
+    /**
+     * Kullanıcının profiline bağlı olarak ürünleri görüntüler.
+     *
+     */
     @RequestMapping("/profile")
     public String viewproduct(HttpSession session, HttpServletRequest req) {
         User user = (User) session.getAttribute("loggedInUser");
         if (user == null) {
-            return "redirect:/register";
+            return "redirect:/register"; // Kullanıcı giriş yapmamışsa kayıt sayfasına yönlendir
         }
+        // Kullanıcının ürünlerini al ve Servlet context üzerine set et
         List<Product> list = pdao.getProductsByUserId(user.getId());
         req.getServletContext().setAttribute("list", list);
-        return "profile";
+        return "profile"; // Profil sayfasına yönlendir
     }
 
+    /**
+     * Belirli bir ürünün detaylarını görüntüler.
+     *
+     */
     @RequestMapping("/viewdetail")
     public String viewProductDetails(@RequestParam("productId") String productId, HttpServletRequest req) {
+        // Ürünü ID'sine göre al ve Servlet context üzerine set et
         Product product = pdao.getProductById(Integer.valueOf(productId));
         req.getServletContext().setAttribute("product", product);
-        return "product-details";
+        return "product-details"; // Ürün detayları sayfasına yönlendir
     }
 
+    /**
+     * Belirli bir ürünü paylaşım için hazırlar.
+          */
     @RequestMapping("/shareproduct")
     public String share(@RequestParam("productId") String productId, HttpServletRequest req) {
+        // Ürünü ID'sine göre al ve Servlet context üzerine set et
         Product product = pdao.getProductById(Integer.valueOf(productId));
         req.getServletContext().setAttribute("product", product);
-        return "homepage_foruser";
+        return "homepage_foruser"; // Anasayfa sayfasına yönlendir
     }
 
+    /**
+     * Belirli bir ürünü düzenleme formunu gösterir.
+     *
+     */
     @RequestMapping(value = "/editproduct")
     public String editProduct(@RequestParam("productId") String productId, HttpSession session,
                               HttpServletRequest req) {
 
-        
+        // Ürünü ID'sine göre al ve Servlet context üzerine set et
         Product product = pdao.getProductById(Integer.valueOf(productId));
-
-        req.getServletContext().setAttribute("command", product);
-        return "producteditform";
+        req.getServletContext().setAttribute("command", product); // 'command' yerine 'product' olarak değiştir
+        return "producteditform"; // Ürün düzenleme formuna yönlendir
     }
 
+    /**
+     * Düzenlenmiş bir ürünü kaydeder.
+ 
+     */
     @RequestMapping(value = "/producteditsave", method = RequestMethod.POST)
     public String saveEditedProduct(
             @RequestParam("productId") int productId,
@@ -102,9 +124,8 @@ public class ProductController {
             @RequestParam("quantity") int quantity,
             @RequestParam("price") double price,
             HttpSession session) {
-       
 
-        // Admin ise ürün düzenleme işlemini gerçekleştir
+        // Yeni bilgilerle ürün oluştur
         Product product = new Product();
         product.setProductId(productId);
         product.setName(name);
@@ -113,22 +134,32 @@ public class ProductController {
         product.setPrice(price);
         product.setUserId(userId);
 
+        // Ürünü güncelle
         pdao.update(product);
 
         return "redirect:/viewproduct"; // Ürünler sayfasına yönlendir
     }
 
-
+    /**
+     * Belirli bir ürünü siler.
+  
+     */
     @RequestMapping(value = "/deleteproduct", method = RequestMethod.GET)
     public String deleteProduct(@RequestParam("productId") String id, HttpSession session) {
+        // Ürünü ID'sine göre sil
         pdao.delete(Integer.valueOf(id));
-        return "redirect:/viewproduct";
+        return "redirect:/viewproduct"; // Ürünler sayfasına yönlendir
     }
 
+    /**
+     * Tüm ürünleri görüntüler.
+
+     */
     @RequestMapping("/viewproduct")
     public String viewproductsforadmin(HttpServletRequest req) {
+        // Tüm ürünleri al ve Servlet context üzerine set et
         List<Product> list = pdao.getProducts();
         req.getServletContext().setAttribute("list", list);
-        return "viewproduct";
+        return "viewproduct"; // Ürünleri görüntüleme sayfasına yönlendir
     }
 }
