@@ -31,6 +31,12 @@ public class CartController {
 	@Autowired
 	ProductDao pdao;
 
+	/**
+	 * Sepete ürün ekler.
+	 * Kullanıcı giriş yapmamışsa kayıt sayfasına yönlendirir.
+	 * Ürün bulunamazsa ürün listesi sayfasına yönlendirir.
+	
+	 */
 	@GetMapping(value = "/addToCart")
 	public String addToCart(@RequestParam("productId") String productId,
 			@RequestParam("quantity") @Nullable String quantity, HttpServletRequest req, HttpSession session) {
@@ -41,8 +47,8 @@ public class CartController {
 
 		Product product = pdao.getProductById(Integer.valueOf(productId));
 		if (product == null) {
-			// Handle product not found scenario
-			return "redirect:/products"; // Örneğin, ürün bulunamazsa ürün listesine yönlendirin
+			// Ürün bulunamazsa senaryosunu yönetin
+			return "redirect:/products"; // Ürün listesine yönlendirir
 		}
 
 		Cart cartItem = new Cart();
@@ -51,12 +57,17 @@ public class CartController {
 		if (quantity == null) {
 			quantity = "1";
 		}
-		cartItem.setQuantity(Integer.valueOf(quantity)); // Default quantity
-		cartItem.setPrice(product.getPrice()); // Ürünün fiyatını ekleyin
+		cartItem.setQuantity(Integer.valueOf(quantity)); // Varsayılan miktar
+		cartItem.setPrice(product.getPrice()); // Ürün fiyatını ayarlar
 		cartdao.addCartItem(cartItem);
 		return "redirect:/cart";
 	}
 
+	/**
+	 * Sepeti görüntüler.
+	 * Kullanıcı giriş yapmamışsa kayıt sayfasına yönlendirir 
+	
+	 */
 	@RequestMapping("/cart")
 	public String viewCart(HttpSession session, HttpServletRequest req) {
 		User user = (User) session.getAttribute("loggedInUser");
@@ -78,6 +89,10 @@ public class CartController {
 		return "cart";
 	}
 
+	/**
+	 * Belirli bir öğeyi sepetten siler.
+	
+	 */
 	@RequestMapping(value = "/deletecart", method = RequestMethod.GET)
 	public String delete(@RequestParam("cartId") String cartId) {
 		cartdao.delete(Integer.valueOf(cartId));
