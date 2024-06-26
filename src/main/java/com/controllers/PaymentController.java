@@ -33,39 +33,50 @@ public class PaymentController {
 	
 	
 	
-	@RequestMapping(value = "/pay", method = RequestMethod.GET)
-    public String addToCart(@RequestParam("cartId") String cartId, HttpSession session) {
+    @RequestMapping(value = "/pay", method = RequestMethod.GET)
+    public String pay(HttpSession session) {
         User user = (User) session.getAttribute("loggedInUser");
-        Product product = pdao.getProductByCartId(Integer.valueOf(cartId));
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        List<Cart> cartItems = cartdao.getCartItemsByUserId(user.getId());
+        double totalPrice = 0;
+
+        for (Cart cartItem : cartItems) {
+            Product product = pdao.getProductById(cartItem.getProductId());
+            totalPrice += product.getPrice() * cartItem.getQuantity();
+        }
+
         Payment payment = new Payment();
         payment.setUserId(user.getId());
-        payment.setTotalPrice(product.getPrice());
-        payment.setProductId(Integer.valueOf(product.getProductId()));
-        return "redirect:/checkout?cartId="+Integer.valueOf(cartId);
+        payment.setTotalPrice(totalPrice);
+
+        paymentdao.savePayment(payment);
+
+        return "redirect:/checkout?totalPrice=" + totalPrice;
     }
     
     
     
-	@RequestMapping("/checkout")
-	public String checkout(@RequestParam("cartId") String cartId,HttpSession session, HttpServletRequest req) {
-	    User user = (User) session.getAttribute("loggedInUser");
-	    if (user == null) {
-	        return "redirect:/register";
-	    }
+    @RequestMapping("/checkout")
+    public String checkout(HttpSession session, @RequestParam("totalPrice") double totalPrice) {
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/register";
+        }
 
-	    List<Payment> payments = paymentdao.getPaymentsByUserId(user.getId());
-	    double totalPrice = 0.0;
+        // Ödemeleri session'a ekleyin
+        Payment payment = paymentdao.getPaymentByUserId(user.getId());
+        
+        
+        session.setAttribute("totalPrice", totalPrice);
+        session.setAttribute("payment", payment);
 
-	    // Toplam fiyatı hesaplayın
-	    for (Payment payment : payments) {
-	        totalPrice += payment.getTotalPrice(); // Ödeme miktarının doğru alan adını kullanın
-	    }
+        return "checkout";
+    }
 
-	    session.setAttribute("payments", payments);
-	    session.setAttribute("totalPrice", totalPrice);
-
-	    return "checkout";
-	}
 
 
 }
