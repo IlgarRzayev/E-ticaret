@@ -22,7 +22,7 @@
 		
 		/* Header styles */
 		.header {
-		    background-color: #FFA500;
+		    background-color: #FF4B2B;
 		    padding: 1rem 0;
 		    color: #fff;
 		    text-align: center;
@@ -74,7 +74,7 @@
 		}
 		
 		.admin-link {
-		    background-color: #FFA500;
+		    background-color: #FF4B2B;
 		    color: #fff;
 		    padding: 0.5rem 1rem;
 		    margin: 0 10px;
@@ -82,7 +82,7 @@
 		}
 		
 		.admin-link:hover {
-		    background-color: #f27000;
+		    background-color: #EB3717;
 		}
 		
 		/* Footer styles */
