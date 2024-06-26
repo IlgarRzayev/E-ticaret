@@ -21,7 +21,7 @@
 
         /* Header styles */
         .header {
-            background-color: #FFA500;
+            background-color: #FF4B2B;
             color: #fff;
             padding: 1rem 0;
             text-align: center;
@@ -63,7 +63,7 @@
         }
 
         .product-list h2 {
-            color: #333;
+            color: #FF4B2B;
             margin-bottom: 1rem;
         }
 
@@ -79,7 +79,7 @@
         }
 
         .product-table th {
-            background-color: #FFA500;
+            background-color: #FF4B2B;
             color: #fff;
         }
 
@@ -144,7 +144,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>İsim</th>
+                            <th>Ürün İsmi</th>
                             <th>Kategori</th>
                             <th>Fiyat</th>
                             <th>Stok Adedi</th>
