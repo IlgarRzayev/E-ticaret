@@ -32,6 +32,10 @@ public class PaymentDao {
         String sql="delete from payment where cartId="+cartId+"";    
         return jdbcTemplate.update(sql);    
     }
+    public int deletePayment(int userId){    
+        String sql="delete from payment where paymentId="+userId+"";    
+        return jdbcTemplate.update(sql);    
+    }
     public Payment getPaymentByUserId(int userId) {
         String sql = "SELECT * FROM payments WHERE userId = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{userId}, new BeanPropertyRowMapper<>(Payment.class));
