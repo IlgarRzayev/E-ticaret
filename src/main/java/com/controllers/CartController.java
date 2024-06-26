@@ -2,6 +2,7 @@ package com.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,67 +20,68 @@ import com.beans.User;
 import com.dao.CartDao;
 import com.dao.ProductDao;
 
+import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class CartController {
-	 	@Autowired
-	    CartDao cartdao;
-	    @Autowired
-	    ProductDao pdao;
+	@Autowired
+	CartDao cartdao;
+	@Autowired
+	ProductDao pdao;
 
-	    @GetMapping(value = "/addToCart")
-	    public String addToCart(@RequestParam("productId") String productId, HttpServletRequest req, HttpSession session) {
-	        User user = (User) session.getAttribute("loggedInUser");
-	        if (user == null) {
-	            return "redirect:/register";
-	        }
+	@GetMapping(value = "/addToCart")
+	public String addToCart(@RequestParam("productId") String productId,
+			@RequestParam("quantity") @Nullable String quantity, HttpServletRequest req, HttpSession session) {
+		User user = (User) session.getAttribute("loggedInUser");
+		if (user == null) {
+			return "redirect:/register";
+		}
 
-	        Product product = pdao.getProductById(Integer.valueOf(productId));
-	        if (product == null) {
-	            // Handle product not found scenario
-	            return "redirect:/products"; // Örneğin, ürün bulunamazsa ürün listesine yönlendirin
-	        }
+		Product product = pdao.getProductById(Integer.valueOf(productId));
+		if (product == null) {
+			// Handle product not found scenario
+			return "redirect:/products"; // Örneğin, ürün bulunamazsa ürün listesine yönlendirin
+		}
 
-	        Cart cartItem = new Cart();
-	        cartItem.setUserId(user.getId());
-	        cartItem.setProductId(product.getProductId());
-	        cartItem.setQuantity(1); // Default quantity
-	        cartItem.setPrice(product.getPrice()); // Ürünün fiyatını ekleyin
+		Cart cartItem = new Cart();
+		cartItem.setUserId(user.getId());
+		cartItem.setProductId(product.getProductId());
+		if (quantity == null) {
+			quantity = "1";
+		}
+		cartItem.setQuantity(Integer.valueOf(quantity)); // Default quantity
+		cartItem.setPrice(product.getPrice()); // Ürünün fiyatını ekleyin
+		cartdao.addCartItem(cartItem);
+		return "redirect:/cart";
+	}
 
-	        cartdao.addCartItem(cartItem);
-	        return "redirect:/cart";
-	    }
+	@RequestMapping("/cart")
+	public String viewCart(HttpSession session, HttpServletRequest req) {
+		User user = (User) session.getAttribute("loggedInUser");
 
+		if (user == null) {
+			return "redirect:/register";
+		}
 
-	    @RequestMapping("/cart")
-	    public String viewCart(HttpSession session, HttpServletRequest req) {
-	        User user = (User) session.getAttribute("loggedInUser");
+		List<Cart> cartItems = cartdao.getCartItemsByUserId(user.getId());
+		TreeMap<Integer, Product> products = new TreeMap<>();
 
-	        if (user == null) {
-	            return "redirect:/register";
-	        }
+		for (Cart item : cartItems) {
+			Product product = pdao.getProductById(item.getProductId());
+			products.put(product.getProductId(), product);
+		}
 
-	        List<Cart> cartItems = cartdao.getCartItemsByUserId(user.getId());
-	        List<Product> products = new ArrayList<>();
+		req.getServletContext().setAttribute("cartItems", cartItems);
+		req.getServletContext().setAttribute("products", products);
+		return "cart";
+	}
 
-	        for (Cart item : cartItems) {
-	            Product product = pdao.getProductById(item.getProductId());
-	            products.add(product);
-	        }
+	@RequestMapping(value = "/deletecart", method = RequestMethod.GET)
+	public String delete(@RequestParam("cartId") String cartId) {
+		cartdao.delete(Integer.valueOf(cartId));
+		return "redirect:/cart";
+	}
 
-	        req.getServletContext().setAttribute("cartItems", cartItems);
-	        req.getServletContext().setAttribute("products", products);
-
-	        return "cart";
-	    }
-	    
-	    @RequestMapping(value = "/deletecart", method = RequestMethod.GET)
-	    public String delete(@RequestParam("cartId") String cartId) {
-	        cartdao.delete(Integer.valueOf(cartId));
-	        return "redirect:/cart";
-	    }
-	    
-	    
 }
-
