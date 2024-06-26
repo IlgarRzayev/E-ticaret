@@ -61,11 +61,9 @@ public class UserController {
 	public String login(@RequestParam("email") String email, @RequestParam("password") String password,
 			HttpSession session, HttpServletRequest req) {
 		User user = udao.getUserByEmailAndPassword(email, password);
-
 		if (user != null) {
 			session.setAttribute("loggedInUser", user);
 			req.getServletContext().setAttribute("user", user);
-
 			// Kullanıcının rolünü kontrol et
 			if ("admin@admin".equals(user.getEmail()) && "admin".equals(user.getPassword())) {
 				session.setAttribute("ADMIN", user);
@@ -135,7 +133,7 @@ public class UserController {
         
         // Önce kullanıcının ürünlerini sil
 		cartdao.deleteByUserId(userId);
-		pdao.deleteByUserId(userId);
+//		pdao.deleteByUserId(userId);
         
         // Sonra kullanıcının sepet kayıtlarını sil
         
