@@ -57,22 +57,19 @@
 </head>
 <body>
     <div class="container">
-        <div class="product-details">
+        <form class="product-details" method="get">
             <h3>${product.name}</h3>
             <img src="${product.imageUrl}" alt="${product.name}" class="product-img">
-   
+   			<input type='hidden' name="productId" value="${product.getProductId()}"/>
             <label for="quantity">Miktar:</label>
-            <input type="number" id="quantity" name="quantity" value="1" class="quantity-input" min="1" required>
+            <input type="number" id="quantity" name="quantity" value="1" class="quantity-input" min="1" required/>
             
             <p id="totalPrice" class="mt-2">Toplam Fiyat: $${product.price}</p>
             
             <div class="btn-group actions" role="group" aria-label="Ürün İşlemleri">
-                <form action="addToCart?productId=${product.productId}" method="post">
-                    <button type="submit" class="btn btn-warning">Sepete Ekle</button>
-                </form>
-                <a href="pay?productId=${product.productId}" class="btn btn-dark">Direkt Ödeme</a>
+                <button type='submit' class="btn btn-warning" formaction="addToCart">Sepete Ekle</button> 
             </div>
-        </div>
+        </form>
     </div>
     
     <script>
