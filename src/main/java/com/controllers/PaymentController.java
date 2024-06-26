@@ -22,6 +22,7 @@ import com.dao.ProductDao;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class PaymentController {
 	@Autowired
@@ -31,8 +32,10 @@ public class PaymentController {
     @Autowired
 	PaymentDao paymentdao;
 	
-	
-	
+	/**
+	 * Sepeti ödeme sayfasına yönlendirir ve ödeme bilgilerini kaydeder.
+	 * Kullanıcı giriş yapmamışsa giriş sayfasına yönlendirir.
+	 */
     @RequestMapping(value = "/pay", method = RequestMethod.GET)
     public String pay(HttpSession session) {
         User user = (User) session.getAttribute("loggedInUser");
@@ -41,6 +44,7 @@ public class PaymentController {
             return "redirect:/login";
         }
 
+        // Kullanıcının sepetindeki ürünleri al ve toplam fiyatı hesapla
         List<Cart> cartItems = cartdao.getCartItemsByUserId(user.getId());
         double totalPrice = 0;
 
@@ -49,17 +53,20 @@ public class PaymentController {
             totalPrice += product.getPrice() * cartItem.getQuantity();
         }
 
+        // Ödeme bilgilerini oluştur ve kaydet
         Payment payment = new Payment();
         payment.setUserId(user.getId());
         payment.setTotalPrice(totalPrice);
 
         paymentdao.savePayment(payment);
 
-        return "redirect:/checkout?totalPrice=" + totalPrice;
+        return "redirect:/checkout?totalPrice=" + totalPrice; // Checkout sayfasına yönlendir
     }
     
-    
-    
+    /**
+	 * Ödeme işlemini tamamlayıp checkout sayfasına yönlendirir.
+	 * Kullanıcı giriş yapmamışsa kayıt sayfasına yönlendirir.
+	 */
     @RequestMapping("/checkout")
     public String checkout(HttpSession session, @RequestParam("totalPrice") double totalPrice) {
         User user = (User) session.getAttribute("loggedInUser");
@@ -67,16 +74,13 @@ public class PaymentController {
             return "redirect:/register";
         }
 
-        // Ödemeleri session'a ekleyin
+        // Kullanıcının ödeme bilgilerini session'a ekleyin
         Payment payment = paymentdao.getPaymentByUserId(user.getId());
-        
         
         session.setAttribute("totalPrice", totalPrice);
         session.setAttribute("payment", payment);
 
-        return "checkout";
+        return "checkout"; // Checkout sayfasına yönlendir
     }
-
-
 
 }
