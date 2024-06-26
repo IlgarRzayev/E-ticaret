@@ -9,10 +9,10 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-import com.beans.Order;
+import com.beans.Cart;
 import com.beans.User;
 
-public class OrderDao {
+public class CartDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -26,71 +26,43 @@ public class OrderDao {
 		return this.jdbcTemplate = template;
 	}
 
-	public int addOrder(Order order) {
-		String sql = "insert into orders(userId, productId, totalPrice, paymentMethod) values('" + order.getUserId()
-				+ "','" + order.getProductId() + "','" + order.getTotalPrice() + "','" + order.getPaymentMethod()
-				+ "')";
+
+	public void addCartItem(Cart cartItem) {
+		String sql = "INSERT INTO carts (userId, productId, quantity, price) VALUES (?, ?, ?, ?)";
+		jdbcTemplate.update(sql, cartItem.getUserId(), cartItem.getProductId(), cartItem.getQuantity(),
+				cartItem.getPrice());
+	}
+
+	public int delete(int cartId) {
+		String sql = "delete from carts where cartId=" + cartId + "";
 		return jdbcTemplate.update(sql);
 	}
 
-	public List<Order> getOrdersByUserId(int userId) {
-		String sql = "select * from orders where userId="+userId;
-		try {
-			return jdbcTemplate.query(sql, new RowMapper<Order>() {
-				@Override
-				public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
-					Order o = new Order();
-					o.setOrderId(rs.getInt(1));
-					o.setProductId(rs.getInt(2));
-					o.setUserId(rs.getInt(3));
-					o.setTotalPrice(rs.getDouble(4));
-					o.setPaymentMethod(rs.getString(5));
-					return o;
-				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+	public List<Cart> getCartItemsByUserId(int userId) {
+		String sql = "SELECT * FROM carts WHERE userId=?";
+		return jdbcTemplate.query(sql, new Object[] { userId }, new BeanPropertyRowMapper<Cart>(Cart.class));
 	}
 
-	public int delete(int orderId) {
-		String sql = "delete from orders where orderId=" + orderId;
-		return jdbcTemplate.update(sql);
+	public void deleteByUserId(int id) {
+		String sql = "DELETE FROM carts WHERE userId = ?";
+		jdbcTemplate.update(sql, id);
 	}
 
-	public Order getOrderById(int id) {
-		String sql = "select * from orders where orderId="+id;
-		return jdbcTemplate.queryForObject(sql, new RowMapper<Order>() {
-			@Override
-			public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
-				Order o = new Order();
-				o.setOrderId(rs.getInt(1));
-				o.setProductId(rs.getInt(2));
-				o.setUserId(rs.getInt(3));
-				o.setTotalPrice(rs.getDouble(4));
-				o.setPaymentMethod(rs.getString(5));
-				return o;
-			}
-		});
+	public void deleteByProductId(int userId, int productId) {
+		String sql = "DELETE FROM carts WHERE userId = ? AND productId = ?";
+		jdbcTemplate.update(sql, userId, productId);
 	}
 
-	public int updateOrder(Order order) {
-        String sql = "UPDATE orders SET totalPrice = ?, paymentMethod = ? WHERE orderId = ?";
-        return jdbcTemplate.update(sql, order.getTotalPrice(), order.getPaymentMethod(), order.getOrderId());
-    }
-
-	
-	public List<Order> getOrders() {
-		return jdbcTemplate.query("select * from Orders", new RowMapper<Order>() {
-			public Order mapRow(ResultSet rs, int row) throws SQLException {
-				Order o = new Order();
-				o.setOrderId(rs.getInt(1));
-				o.setProductId(rs.getInt(2));
-				o.setUserId(rs.getInt(3));
-				o.setTotalPrice(rs.getDouble(4));
-				o.setPaymentMethod(rs.getString(5));
-				return o;
+	public List<Cart> getCarts() {
+		return jdbcTemplate.query("select * from Carts", new RowMapper<Cart>() {
+			public Cart mapRow(ResultSet rs, int row) throws SQLException {
+				Cart c = new Cart();
+				c.setCartId(rs.getInt(1));
+				c.setUserId(rs.getInt(2));
+				c.setProductId(rs.getInt(3));
+				c.setQuantity(rs.getInt(4));
+				c.setPrice(rs.getDouble(5));
+				return c;
 			}
 		});
 	}
