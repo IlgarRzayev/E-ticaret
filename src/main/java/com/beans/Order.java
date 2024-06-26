@@ -7,9 +7,8 @@ public class Order {
     private int userId;
     private double totalPrice;
     private String paymentMethod;
-    private int productId; // Her bir sipariş için ürünleri tutacak liste
-
-    // Getter ve Setter metotları
+    private int productId; 
+    
     public int getOrderId() {
         return orderId;
     }
