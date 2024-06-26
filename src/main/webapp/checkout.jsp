@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ödeme</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
     <style>
         /* Global styles */
         body {
@@ -28,6 +30,7 @@
         h1, h2 {
             text-align: center;
             margin-bottom: 20px;
+            color: #FF4B2B;
         }
         
         table {
@@ -43,7 +46,8 @@
         }
         
         th {
-            background-color: #f0f0f0;
+            background-color: #FF4B2B;
+            color: #fff;
         }
         
         /* Form styles */
@@ -58,7 +62,7 @@
         
         input[type="submit"] {
             padding: 10px 20px;
-            background-color: #FFA500;
+            background-color: #FF4B2B;
             color: #fff;
             border: none;
             border-radius: 4px;
@@ -67,7 +71,7 @@
         }
         
         input[type="submit"]:hover {
-            background-color: #f27000;
+            background-color: #e8432e;
         }
         
         /* Responsive styles */
@@ -77,13 +81,14 @@
             }
         }
     </style>
+    
 </head>
 <body>
     <div class="container">
         <h1>Ödeme Sayfası</h1>
         <c:choose>
-            <c:when test="${not empty payments}">
-                <table>
+            <c:when test="${not empty payment}">
+                <table class="table table-bordered">
                     <tr>
                         <th colspan="5">Toplam Fiyat:</th>
                         <td>${totalPrice}</td>
@@ -91,7 +96,7 @@
                 </table>
     
                 <h2>Ödeme Yöntemi Seçiniz</h2>
-                <form action="buy" method="post">
+                <form action="<%=request.getContextPath()%>/buy" method="post">
                     <div class="form-group">
                         <input type="radio" id="creditCard" name="paymentMethod" value="Credit Card">
                         <label for="creditCard">Kredi Kartı</label><br>
@@ -112,6 +117,8 @@
             </c:otherwise>
         </c:choose>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-
