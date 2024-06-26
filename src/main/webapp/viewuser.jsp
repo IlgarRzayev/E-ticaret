@@ -22,7 +22,7 @@ body, html {
 
 /* Header styles */
 .header {
-    background-color: #FFA500;
+    background-color: #FF4B2B;
     color: #fff;
     padding: 1rem 0;
     text-align: center;
@@ -64,7 +64,7 @@ body, html {
 }
 
 .user-list h2 {
-    color: #333;
+    color: #FF4B2B;
     margin-bottom: 1rem;
 }
 
@@ -80,7 +80,7 @@ body, html {
 }
 
 .user-table th {
-    background-color: #FFA500;
+    background-color: #FF4B2B;
     color: #fff;
 }
 
