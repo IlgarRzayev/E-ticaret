@@ -21,125 +21,156 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
-	@Autowired
-	UserDao udao; // will inject dao from XML file
-	@Autowired
-	ProductDao pdao;
-	@Autowired
-	CartDao cartdao; // will inject dao from XML file
-	
+    @Autowired
+    UserDao udao; 
+    @Autowired
+    ProductDao pdao;
+    @Autowired
+    CartDao cartdao; 
 
-	@GetMapping("/")
-	public String index(HttpServletRequest req) {
-		req.getServletContext().setAttribute("products", pdao.getProducts());
-		return "homepage_foruser";
-	}
+    
+     // Ana sayfayı gösterir.
+     
+    @GetMapping("/")
+    public String index(HttpServletRequest req) {
+        req.getServletContext().setAttribute("products", pdao.getProducts());
+        return "homepage_foruser";
+    }
 
-	@RequestMapping("/register")
-	public String showform(HttpServletRequest req) {
-		req.getServletContext().setAttribute("user", new User()); // Change 'command' to 'user'
-		return "register";	
-	}
+   
+     // Kullanıcı kayıt formunu gösterir.
+     
+    @RequestMapping("/register")
+    public String showform(HttpServletRequest req) {
+        req.getServletContext().setAttribute("user", new User()); // 'command' yerine 'user' olarak değiştir
+        return "register";
+    }
 
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String save(@ModelAttribute("user") User user, HttpSession session, HttpServletRequest req) {
-		// Check if the email already exists in the database
-		User existingUser = udao.getUserByEmail(user.getEmail());
-		if (existingUser != null) {
-			// If email already exists, add error message to model
-			req.getServletContext().setAttribute("error", "Kullanılmış email adresi");
-			return "register";
-		}
+    
+     // Yeni kullanıcıyı kaydeder.
+     
+     
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    public String save(@ModelAttribute("user") User user, HttpSession session, HttpServletRequest req) {
+        // Email adresinin veritabanında var olup olmadığını kontrol et
+        User existingUser = udao.getUserByEmail(user.getEmail());
+        if (existingUser != null) {
+            // Eğer email zaten varsa hata mesajını modele ekle
+            req.getServletContext().setAttribute("error", "Kullanılmış email adresi");
+            return "register";
+        }
 
-		// Save the user if email does not exist
-		udao.save(user);
-		session.setAttribute("loggedInUser", user);
-		return "homepage_foruser";
-	}
+        // Eğer email adresi yoksa kullanıcıyı kaydet
+        udao.save(user);
+        session.setAttribute("loggedInUser", user);
+        return "homepage_foruser";
+    }
 
-	@RequestMapping(value = "/login")
-	public String login(@RequestParam("email") String email, @RequestParam("password") String password,
-			HttpSession session, HttpServletRequest req) {
-		User user = udao.getUserByEmailAndPassword(email, password);
-		if (user != null) {
-			session.setAttribute("loggedInUser", user);
-			req.getServletContext().setAttribute("user", user);
-			// Kullanıcının rolünü kontrol et
-			if ("admin@admin".equals(user.getEmail()) && "admin".equals(user.getPassword())) {
-				session.setAttribute("ADMIN", user);
-				return "admin-page"; // Admin kullanıcı için ana sayfa
-			} else {
-				return "homepage_foruser"; // Normal kullanıcı için ana sayfa
-			}
-		} else {
-			req.getServletContext().setAttribute("error", "Invalid email or password");
-			return "register";
-		}
-	}
+    
+     // Kullanıcı giriş işlemini gerçekleştirir.
+     
+    @RequestMapping(value = "/login")
+    public String login(@RequestParam("email") String email, @RequestParam("password") String password,
+                        HttpSession session, HttpServletRequest req) {
+        // Email ve şifreye göre kullanıcıyı getir
+        User user = udao.getUserByEmailAndPassword(email, password);
+        if (user != null) {
+            session.setAttribute("loggedInUser", user);
+            req.getServletContext().setAttribute("user", user);
+            // Kullanıcının admin olup olmadığını kontrol et
+            if ("admin@admin".equals(user.getEmail()) && "admin".equals(user.getPassword())) {
+                session.setAttribute("ADMIN", user);
+                return "admin-page"; // Admin kullanıcı için admin sayfasına yönlendir
+            } else {
+                return "homepage_foruser"; // Normal kullanıcı için ana sayfaya yönlendir
+            }
+        } else {
+            req.getServletContext().setAttribute("error", "Geçersiz email veya şifre");
+            return "register";
+        }
+    }
 
-	@RequestMapping("/logout")
-	public String logout(HttpSession session) {
-		// Oturumu sonlandır
-		session.removeAttribute("loggedInUser");
-		session.invalidate(); // Oturumu geçersiz kıl
+    
+     // Kullanıcıyı oturumdan çıkarır.
+     
+    @RequestMapping("/logout")
+    public String logout(HttpSession session) {
+        // Oturumu sonlandır
+        session.removeAttribute("loggedInUser");
+        session.invalidate(); // Oturumu geçersiz kıl
 
-		return "homepage_foruser"; // Ana sayfaya yönlendir
-	}
+        return "homepage_foruser"; // Ana sayfaya yönlendir
+    }
 
-	// Asagidaki islemler admin icin
-	@RequestMapping(value = "/add-user", method = RequestMethod.POST)
-	public String add(@ModelAttribute("user") User user) {
-		udao.save(user);
-		return "admin-page"; // will redirect to viewemp request mapping
-	}
+    // Aşağıdaki işlemler admin için geçerlidir
 
-	@RequestMapping("/viewuser")
-	public String viewuser(HttpServletRequest req) {
-		List<User> list = udao.getUsers();
-		req.getServletContext().setAttribute("list", list);
-		return "viewuser";
-	}
+    /**
+     * Yeni bir kullanıcı ekler.
+     
+     */
+    @RequestMapping(value = "/add-user", method = RequestMethod.POST)
+    public String add(@ModelAttribute("user") User user) {
+        udao.save(user);
+        return "admin-page"; // admin sayfasına yönlendir
+    }
 
-	@RequestMapping(value = "/edituser")
-	public String edit(@RequestParam("id") String id, HttpServletRequest req) {
-		User user = udao.getUserById(Integer.valueOf(id));
-		req.getServletContext().setAttribute("command", user); // Change 'command' to 'user'
-		return "usereditform";
-	}
+    
+     //Tüm kullanıcıları görüntüler.
+     
+    @RequestMapping("/viewuser")
+    public String viewuser(HttpServletRequest req) {
+        // Tüm kullanıcıları getir ve Servlet context üzerine set et
+        List<User> list = udao.getUsers();
+        req.getServletContext().setAttribute("list", list);
+        return "viewuser"; // Kullanıcıları görüntüleme sayfasına yönlendir
+    }
 
-	@RequestMapping(value = "/usereditsave", method = RequestMethod.POST)
-	public String editsave(@RequestParam("id") int id,
-	                       @RequestParam("name") String name, 
-	                       @RequestParam("email") String email, 
-	                       @RequestParam("surname") String surname) {
-	    // Fetch the existing user from the database
-	    User user = udao.getUserById(id);
-	    if (user != null) {
-	        // Update the user properties
-	        user.setName(name);
-	        user.setEmail(email);
-	        user.setSurname(surname);
-	        
-	        // Perform the update
-	        udao.update(user);
-	    }
-	    return "redirect:/admin-page";
-	}
+    /**
+     * Bir kullanıcının bilgilerini düzenlemek için formu gösterir.
+     */
+    @RequestMapping(value = "/edituser")
+    public String edit(@RequestParam("id") String id, HttpServletRequest req) {
+        // Kullanıcıyı ID'sine göre getir ve Servlet context üzerine set et
+        User user = udao.getUserById(Integer.valueOf(id));
+        req.getServletContext().setAttribute("command", user); // 'command' yerine 'user' olarak değiştir
+        return "usereditform"; // Kullanıcı düzenleme formuna yönlendir
+    }
 
+    /**
+     * Düzenlenmiş kullanıcı bilgilerini kaydeder.
+     */
+    @RequestMapping(value = "/usereditsave", method = RequestMethod.POST)
+    public String editsave(@RequestParam("id") int id,
+                           @RequestParam("name") String name,
+                           @RequestParam("email") String email,
+                           @RequestParam("surname") String surname) {
+        // Veritabanından mevcut kullanıcıyı getir
+        User user = udao.getUserById(id);
+        if (user != null) {
+            // Kullanıcı özelliklerini güncelle
+            user.setName(name);
+            user.setEmail(email);
+            user.setSurname(surname);
 
-	@RequestMapping(value = "/deleteuser", method = RequestMethod.GET)
-	public String delete(@RequestParam("id") String id) {
-		int userId = Integer.parseInt(id);
-        
-        // Önce kullanıcının ürünlerini sil
-		cartdao.deleteByUserId(userId);
-//		pdao.deleteByUserId(userId);
-        
-        // Sonra kullanıcının sepet kayıtlarını sil
-        
-        
-        // Son olarak kullanıcıyı sil
+            // Güncelleme işlemini yap
+            udao.update(user);
+        }
+        return "redirect:/admin-page"; // Admin sayfasına yönlendir
+    }
+
+    /**
+     * Bir kullanıcıyı siler.
+     *
+     */
+    @RequestMapping(value = "/deleteuser", method = RequestMethod.GET)
+    public String delete(@RequestParam("id") String id) {
+        int userId = Integer.parseInt(id);
+
+        // Önce kullanıcının sepet kayıtlarını sil
+        cartdao.deleteByUserId(userId);
+
+        // Sonra kullanıcıyı sil
         udao.delete(userId);
-		return "redirect:/admin-page";
-	}
+        return "redirect:/admin-page"; // Admin sayfasına yönlendir
+    }
 }
