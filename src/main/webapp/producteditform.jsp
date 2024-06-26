@@ -76,20 +76,16 @@
                     <td><form:hidden path="productId" /></td>  
                 </tr>   
                 <tr>    
-                    <td>Name :</td>   
+                    <td>Ürün İsmi :</td>   
                     <td><form:input path="name" /></td>  
                 </tr>    
                 <tr>    
-                    <td>Quantity :</td>    
+                    <td>Miktar :</td>    
                     <td><form:input path="quantity" min="0" value="0" /></td>  
                 </tr>   
                 <tr>    
-                    <td>Price :</td>    
+                    <td>Fiyat :</td>    
                     <td><form:input path="price" type="number" step="0.01" /></td>  
-                </tr>   
-                <tr>    
-                    <td>Image URL :</td>    
-                    <td><form:input path="imageUrl" /></td>  
                 </tr>   
                 <tr>    
                     <td></td>    
