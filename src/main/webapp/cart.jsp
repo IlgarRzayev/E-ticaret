@@ -89,36 +89,38 @@
                 <p>Sepetinizde ürün bulunmamaktadır.</p>
             </c:when>
             <c:otherwise>
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Ürün Adı</th>
-                            <th>Kategori</th>
-                            <th>Fiyat</th>
-                            <th>Adet</th>
-                            <th>Foto</th>
-                            <th>Sil</th>
-                            <th>Öde</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="cartItem" items="${cartItems}">
-                            ${product = products.get(cartItem.getProductId())}
-                            <c:if test="${product.getProductId() == cartItem.getProductId()}">
-                                <tr>
-                                    <td>${product.getName()}</td>
-                                    <td>${product.getCategory()}</td>
-                                    <td>${product.getPrice()}</td>
-                                    <td>${cartItem.quantity}</td>
-                                    <td><img src="${product.getImageUrl()}" alt="${product.getName()}" /></td>
-                                    <td><a href="deletecart?cartId=${cartItem.getCartId()}" class="btn btn-delete">Sil</a></td>
-                                    <%-- <td><a href="pay?cartId=${cartItem.getCartId()}" class="btn btn-pay">Öde</a></td> --%>
-                                    
-                                </tr>
-                            </c:if>
-                        </c:forEach>
-                    </tbody>
-                </table>
+                <form action="pay" method="get">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Ürün Adı</th>
+                                <th>Kategori</th>
+                                <th>Fiyat</th>
+                                <th>Adet</th>
+                                <th>Foto</th>
+                                <th>Sil</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="cartItem" items="${cartItems}">
+                                <c:set var="product" value="${products.get(cartItem.productId)}"/>
+                                <c:if test="${product != null && product.productId == cartItem.productId}">
+                                    <tr>
+                                        <td>${product.name}</td>
+                                        <td>${product.category}</td>
+                                        <td>${product.price}</td>
+                                        <td>${cartItem.quantity}</td>
+                                        <td><img src="${product.imageUrl}" alt="${product.name}" /></td>
+                                        <td>
+                                            <a href="deletecart?cartId=${cartItem.cartId}" class="btn btn-delete">Sil</a>
+                                        </td>
+                                    </tr>
+                                </c:if>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-pay">Öde</button>
+                </form>
             </c:otherwise>
         </c:choose>
     </div>
