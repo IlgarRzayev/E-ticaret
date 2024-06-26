@@ -21,6 +21,7 @@ import com.beans.Product;
 import com.beans.User;
 import com.dao.CartDao;
 import com.dao.OrderDao;
+import com.dao.PaymentDao;
 import com.dao.ProductDao;
 
 @Controller
@@ -31,6 +32,9 @@ public class OrderController {
 	ProductDao pdao;
 	@Autowired
 	CartDao cartdao;
+	@Autowired
+	PaymentDao paymentdao;
+	
 
 	@RequestMapping(value = "/buy", method = RequestMethod.POST)
     public String addToOrder(@RequestParam("paymentMethod") String paymentMethod, HttpSession session) {
@@ -60,7 +64,7 @@ public class OrderController {
              cartdao.deleteByProductId(user.getId(), cartItem.getProductId());
         }
 
-       
+       paymentdao.deletePayment(user.getId());
        
 
         return "redirect:/orders"; 
